@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "erc20-load-test-tool.fullname" . }}-configmap
+  labels:
+    {{- include "erc20-load-test-tool.labels" . | nindent 4 }}
+data:
+  .env: |
+    # SCRIPT ENV VARIABLES
+    export DAPP_INSTANCES={{ .Values.erc20config.scriptEnv.dappInstances }}
+    export SHARE_CONTRACT={{ .Values.erc20config.scriptEnv.shareContract }}
+    export EXPOSE_UI_PORT_EXTERNALLY={{ .Values.erc20config.scriptEnv.exportUiPortExternally }}
+    export MAX_SLEEP_TIME={{ .Values.erc20config.scriptEnv.maxSleepTime }}
+
+    # ETH ENDPOINT
+    export WEB3J_ETHCLIENT_PROTOCOL=http
+    export WEB3J_ETHCLIENT_HOST={{ .Values.erc20config.ethEndpoint.host }}
+    export WEB3J_ETHCLIENT_PORT=8545
+    export WEB3J_ETHCLIENT_CORRELATE={{ .Values.erc20config.ethEndpoint.correlate }}
+
+    # WORKLOAD
+    export WORKLOAD_TRANSACTIONS={{ .Values.erc20config.workload.transactions }}
+    export WORKLOAD_MODEL={{ .Values.erc20config.workload.model }}
+    export WORKLOAD_LOAD_FACTOR={{ .Values.erc20config.workload.loadFactor }}
+    export WORKLOAD_BATCH_SIZE={{ .Values.erc20config.workload.batchSize }}
+
+    # RECEIPT
+    export WEB3J_RECEIPT_ATTEMPTS={{ .Values.erc20config.receipt.attempts }}
+    export WEB3J_RECEIPT_INTERVAL={{ .Values.erc20config.receipt.interval }}
+    export WEB3J_RECEIPT_DEFER={{ .Values.erc20config.receipt.defer }}
+    export WEB3J_RECEIPT_CHECK_WRITE_TX_FAILED={{ .Values.erc20config.receipt.checkWriteTxFailed }}
+    export WEB3J_RECEIPT_RETRY_WRITE_TX_SLEEP={{ .Values.erc20config.receipt.retryWriteTxSleep }}
+    export WEB3J_RECEIPT_NO_WRITE_TX_RETRY={{ .Values.erc20config.receipt.noWriteTxRetry }}
+
+    # MISC
+    export WEB3J_LOG_LEVEL={{ .Values.erc20config.misc.logLevel }}
+    export WEB3J_OKHTTP_READ_TIMEOUT={{ .Values.erc20config.misc.okhttpReadTimeout }}
+
+    # WAVEFRONT
+    export MANAGEMENT_METRICS_EXPORT_WAVEFRONT_ENABLED={{ .Values.erc20config.wavefront.metricsExportWavefrontEnabled }}
+    export WAVEFRONT_TOKEN={{ .Values.erc20config.wavefront.token }}
