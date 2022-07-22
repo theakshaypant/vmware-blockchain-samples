@@ -1,10 +1,26 @@
-namespace: erc20
-
+# Image configuration to be used for the erc20-load-test-tool deployment.
+# If the erc20-load-test-tool has been built locally, the name of the image is specified in `image.repository` and the
+# associated version in `tag`
 image:
-  repository: harbor-repo/app_perf/erc20-load-test-tool
-  tag: 0.0.2
+  # Repository/name of the image to be used.
+  repository: erc20-load-test-tool
+  # Version of the image to be used for running the application.
+  tag: 0.0.1
+  # Image pull policy for the erc20-load-test-tool image.
   pullPolicy: IfNotPresent
 
+# Resources to be used by the erc20 pod.
+resources:
+  # Resource request or lower bound for the resources.
+  requests:
+    memory: "1Gi"
+    cpu: "250m"
+  # Resource limits or upper bound for the resources.
+  limits:
+    memory: "1Gi"
+    cpu: "250m"
+
+# Configuration used by the erc20 benchmarking.
 erc20config:
   scriptEnv:
     dappInstances: 1

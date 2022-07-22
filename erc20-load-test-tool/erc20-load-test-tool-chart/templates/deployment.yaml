@@ -1,29 +1,34 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "erc20-load-test-tool-chart.fullname" . }}-deployment
+  name: {{ .Release.Name }}-deployment
   labels:
-    {{- include "erc20-load-test-tool-chart.labels" . | nindent 4 }}
+    app: {{ .Release.Name }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      {{- include "erc20-load-test-tool-chart.selectorLabels" . | nindent 6 }}
+      app: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        {{- include "erc20-load-test-tool-chart.selectorLabels" . | nindent 8 }}
+        app: {{ .Release.Name }}
     spec:
       containers:
-        - name: {{ .Chart.Name }}
-          image: {{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-          volumeMounts:
-            - name: config-volume
-              mountPath: /.env
-        volumes:
-          - name: config-volume
-            configMap:
-              name: {{ include "erc20-load-test-tool.fullname" . }}-configmap
+      - name: {{ .Chart.Name }}
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        resources:
+          requests:
+            memory: {{ .Values.resources.requests.memory }}
+            cpu: {{ .Values.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.resources.limits.memory }}
+            cpu: {{ .Values.resources.limits.cpu }}
+        volumeMounts:
+        - name: config-volume
+          mountPath: /.env
+      volumes:
+      - name: config-volume
+        configMap:
+          name: {{ .Release.Name }}-configmap
