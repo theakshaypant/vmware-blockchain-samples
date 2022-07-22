@@ -211,7 +211,7 @@ def run_dapp(priv_key, contract_address, port):
         os.environ["TOKEN_CONTRACT_ADDRESS"] = contract_address
 
     jar = "target/erc20-benchmark-1.0-SNAPSHOT.jar"
-    cmd = "cd ..; java -jar -Dserver.port=" + str(port) + " -Dtoken.private-key=" + priv_key + " " + jar
+    cmd = "cd ..; java -jar -Dserver.port=" + str(port) + " -Dtoken.deployer-private-key=" + priv_key + " " + jar
 
     p = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
     if not p.returncode:
@@ -237,7 +237,7 @@ def aggregate_report(instance):
     aggregate_write_latency = 0
     aggregate_read_latency = 0
     aggregate_tx = 0
-    aggregate_loadfactor = 0
+    aggregate_concurrency = 0
     aggregate_write_req_status = {}
     aggregate_read_req_status = {}
     aggregate_write_req_errors = {}
@@ -253,7 +253,7 @@ def aggregate_report(instance):
                 aggregate_read_throughput += data['averageReadThroughput']
                 aggregate_write_latency += data['averageLatency']
                 aggregate_read_latency += data['averageReadLatency']
-                aggregate_loadfactor += data['loadFactor']
+                aggregate_concurrency += data['concurrency']
 
                 if data["txStatus"]:
                     tx_status_list = data["txStatus"].split(",")
@@ -285,7 +285,7 @@ def aggregate_report(instance):
                 'aggregate_read_throughput': aggregate_read_throughput,
                 'aggregate_write_latency': int(aggregate_write_latency / instance),
                 'aggregate_read_latency': int(aggregate_read_latency / instance),
-                'aggregate_loadfactor': aggregate_loadfactor,
+                'aggregate_concurrency': aggregate_concurrency,
                 'aggregate_write_req_status': aggregate_write_req_status,
                 'aggregate_read_req_status': aggregate_read_req_status,
                 'aggregate_write_req_errors': aggregate_write_req_errors,
@@ -356,8 +356,7 @@ def main():
     check_write_read_access(perm_dapp_contract, accts)
 
     contract_address = None
-    if share_contract:
-        assert dapp_count > 1, "At least 2 instances should run to share contract."
+    if share_contract and dapp_count>1:
         contract_address = deploy_contract(accts[0], priv_keys[0])
         print("Contract Address -", contract_address)
         distribute_tokens(accts, priv_keys, contract_address)
